@@ -19,7 +19,7 @@ typedef struct erow {
 
 struct editorConfig {
   int cx, cy;
-	int rowOff;
+  int rowOff;
   int screenRows;
   int screenCols;
   int numRows;
@@ -136,7 +136,7 @@ void editorOpen(char *filename) {
   ssize_t lineLen;
   lineLen = getline(&line, &lineCap, fp);
 
-	while ((lineLen = getline(&line, &lineCap, fp)) != -1) {
+  while ((lineLen = getline(&line, &lineCap, fp)) != -1) {
     while (lineLen > 0 &&
            (line[lineLen - 1] == '\n' || line[lineLen - 1] == '\r'))
       lineLen--;
@@ -168,40 +168,39 @@ void abAppend(struct abuf *ab, const char *s, int len) {
 void abFree(struct abuf *ab) { free(ab->b); }
 
 void editorScroll() {
-	if (E.cy < E.rowOff) {
-		E.rowOff = E.cy;
-	}
-	if (E.cy >= E.rowOff + E.screenRows) {
-		E.rowOff = E.cy - E.screenRows + 1;
-	}
+  if (E.cy >= E.rowOff + E.screenRows) {
+    E.rowOff++;
+  } else if (E.cy == 0 && E.rowOff > 0) {
+    E.rowOff--;
+  }
 }
 
 // Draw tildes down the left hand side, like vim
 void editorDrawRows(struct abuf *ab) {
   int y;
-	for (y = 0; y < E.screenRows; y++) {
-		int fileRow = y + E.rowOff;
-		if (fileRow > E.numRows) {
-			if (y >= E.numRows) {
-				if (E.numRows == 0 && y == E.screenRows / 3) {
-					char welcome[80];
-					int welcomeLen = snprintf(welcome, sizeof(welcome),
-						"Editor -- version %s", EDITOR_VERSION);
-					if (welcomeLen > E.screenCols)
-					welcomeLen = E.screenCols;
+  for (y = 0; y < E.screenRows - 1; y++) {
+    int fileRow = y + E.rowOff;
+    if (fileRow > E.numRows) {
+      if (y >= E.numRows) {
+        if (E.numRows == 0 && y == E.screenRows / 3) {
+          char welcome[80];
+          int welcomeLen = snprintf(welcome, sizeof(welcome),
+                                    "Editor -- version %s", EDITOR_VERSION);
+          if (welcomeLen > E.screenCols)
+            welcomeLen = E.screenCols;
 
-					int padding = (E.screenCols - welcomeLen) / 2;
-					if (padding) {
-						abAppend(ab, "~", 1);
-						padding--;
-					}
-					while (padding--)
-					abAppend(ab, " ", 1);
-					abAppend(ab, welcome, welcomeLen);
-				} else {
-					abAppend(ab, "~", 1);
-				}
-			}
+          int padding = (E.screenCols - welcomeLen) / 2;
+          if (padding) {
+            abAppend(ab, "~", 1);
+            padding--;
+          }
+          while (padding--)
+            abAppend(ab, " ", 1);
+          abAppend(ab, welcome, welcomeLen);
+        } else {
+          abAppend(ab, "~", 1);
+        }
+      }
     } else {
       int len = E.row[fileRow].size;
       if (len > E.screenCols)
@@ -214,11 +213,19 @@ void editorDrawRows(struct abuf *ab) {
     if (y < E.screenRows - 1)
       abAppend(ab, "\r\n", 2);
   }
+
+  // Status line at the bottom to show some info for debug
+  char status[80];
+  int statusLen =
+      snprintf(status, sizeof(status),
+               "rowOff: %d | numRows: %d | cx: %d | cy: %d | screenRows: %d",
+               E.rowOff, E.numRows, E.cx, E.cy, E.screenRows);
+  abAppend(ab, status, statusLen);
 }
 
 // Clear the screen
 void editorRefreshScreen() {
-	editorScroll();
+  editorScroll();
 
   struct abuf ab = ABUF_INIT;
 
@@ -247,12 +254,18 @@ void editorMoveCursor(char key) {
       E.cx--;
     break;
   case 'j':
-    if (E.cy < E.numRows)
+    if (E.cy < E.numRows) {
+      if (E.cy == E.screenRows - 1)
+        E.cy += E.rowOff;
       E.cy++;
+    }
     break;
   case 'k':
-    if (E.cy != 0)
+    if (E.cy > 0) {
+      if (E.cy >= E.screenRows)
+        E.cy -= E.rowOff;
       E.cy--;
+    }
     break;
   case 'l':
     if (E.cx != E.screenCols - 1)
@@ -283,7 +296,7 @@ void editorProcessKeypress() {
 void initEditor() {
   E.cx = 0;
   E.cy = 0;
-	E.rowOff = 0;
+  E.rowOff = 0;
   E.numRows = 0;
   E.row = NULL;
 
