@@ -47,6 +47,20 @@ void editorScroll() {
   }
 }
 
+void editorSetStatusMessage(char *msg) {
+  E.statusMsg = msg;
+}
+
+void editorDrawStatusBar(struct abuf *ab) {
+  char status[120];
+  int statusLen =
+      snprintf(status, sizeof(status),
+               "rowOff: %d | numRows: %d | cx: %d | cy: %d | editorRows: %d | "
+               "screenRows: %d | statusMessage: %s",
+               E.rowOff, E.numRows, E.cx, E.cy, E.editorRows, E.screenRows, E.statusMsg);
+  abAppend(ab, status, statusLen);
+}
+
 // Draw what is supposed to be shown on screen atm
 void editorDrawRows(struct abuf *ab) {
   int y;
@@ -68,14 +82,7 @@ void editorDrawRows(struct abuf *ab) {
     abAppend(ab, "\r\n", 2);
   }
 
-  // Status line at the bottom to show some info for debug
-  char status[80];
-  int statusLen =
-      snprintf(status, sizeof(status),
-               "rowOff: %d | numRows: %d | cx: %d | cy: %d | editorRows: %d | "
-               "screenRows: %d",
-               E.rowOff, E.numRows, E.cx, E.cy, E.editorRows, E.screenRows);
-  abAppend(ab, status, statusLen);
+  editorDrawStatusBar(ab);
 }
 
 // Clear the screen
@@ -164,6 +171,7 @@ void initEditor() {
   E.rowOff = 0;
   E.numRows = 0;
   E.row = NULL;
+  E.statusMsg = NULL;
 
   if (getWindowSize(&E.screenRows, &E.screenCols) == -1) {
     die("getWindowSize");

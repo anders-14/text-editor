@@ -24,11 +24,14 @@ struct editorConfig {
   int screenCols;
   int numRows;
   erow *row;
+  char *statusMsg;
 } E;
 
 void editorAppendRow(char *s, size_t len);
 void editorOpen(char *filename);
 void editorScroll();
+void editorSetStatusMessage(char *msg);
+void editorDrawStatusBar(struct abuf *ab);
 void editorDrawRows(struct abuf *ab);
 void editorRefreshScreen();
 void editorMoveCursor(char key);
