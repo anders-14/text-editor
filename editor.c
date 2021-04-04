@@ -7,7 +7,8 @@
 #include <unistd.h>
 
 #include "common.h"
-#include "config.h"
+
+#define TAB_STOP 4
 
 void editorUpdateRow(erow *row)
 {
