@@ -97,7 +97,7 @@ void editorSetStatusMessage(char *msg)
 
 void editorDrawStatusBar(struct abuf *ab)
 {
-  char status[120];
+  char status[E.screenCols];
   int statusLen = snprintf(
       status, sizeof(status),
       "rowOff: %d | numRows: %d | cx: %d | cy: %d | editorRows: %d | "
