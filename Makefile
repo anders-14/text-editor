@@ -1,2 +1,5 @@
-./bin/main: main.c
-	gcc main.c -o ./bin/main -Wall -Wextra -pedantic
+./bin/main: *.c
+	gcc -o ./bin/main -Wall -Wextra -pedantic \
+		main.c \
+		common.c \
+		editor.c
