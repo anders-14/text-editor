@@ -134,7 +134,6 @@ void editorOpen(char *filename) {
   char *line = NULL;
   size_t lineCap = 0;
   ssize_t lineLen;
-  lineLen = getline(&line, &lineCap, fp);
 
   while ((lineLen = getline(&line, &lineCap, fp)) != -1) {
     while (lineLen > 0 &&
