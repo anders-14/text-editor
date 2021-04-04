@@ -1,19 +1,13 @@
-#pragma once
+#ifndef EDITOR_H
+#define EDITOR_H
 
-#include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-
-#include "common.h"
-
-#define EDITOR_VERSION "0.0.1"
 #define CTRL_KEY(k) ((k)&0x1f)
 
-typedef struct erow {
+typedef struct {
   int size;
+  int rsize;
   char *chars;
+  char *render;
 } erow;
 
 struct editorConfig {
@@ -23,18 +17,13 @@ struct editorConfig {
   int screenRows;
   int screenCols;
   int numRows;
-  erow *row;
+  erow *rows;
   char *statusMsg;
 } E;
 
-void editorAppendRow(char *s, size_t len);
-void editorOpen(char *filename);
-void editorScroll();
-void editorSetStatusMessage(char *msg);
-void editorDrawStatusBar(struct abuf *ab);
-void editorDrawRows(struct abuf *ab);
-void editorRefreshScreen();
-void editorMoveCursor(char key);
-char editorReadKey();
-void editorProcessKeypress();
 void initEditor();
+void editorOpen(char *filename);
+void editorRefreshScreen();
+void editorProcessKeypress();
+
+#endif

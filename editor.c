@@ -1,23 +1,62 @@
 #include "editor.h"
 
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+#include "common.h"
+#include "config.h"
+
+void editorUpdateRow(erow *row)
+{
+  int tabs = 0;
+  int j;
+  for (j = 0; j < row->size; j++) {
+    if (row->chars[j] == '\t') tabs++;
+  }
+
+  free(row->render);
+  row->render = malloc(row->size + tabs * (TAB_STOP - 1) + 1);
+
+  int idx = 0;
+  for (j = 0; j < row->size; j++) {
+    if (row->chars[j] == '\t') {
+      row->render[idx++] = ' ';
+      while (idx % TAB_STOP != 0) row->render[idx++] = ' ';
+    } else {
+      row->render[idx++] = row->chars[j];
+    }
+  }
+  row->render[idx] = '\0';
+  row->rsize = idx;
+}
+
 void editorAppendRow(char *s, size_t len)
 {
-  E.row = realloc(E.row, sizeof(erow) * (E.numRows + 1));
+  // Increasing the size of the rows array
+  E.rows = realloc(E.rows, sizeof(erow) * (E.numRows + 1));
 
-  int at = E.numRows;
+  int i = E.numRows;
 
-  E.row[at].size = len;
-  E.row[at].chars = malloc(len + 1);
-  memcpy(E.row[at].chars, s, len);
-  E.row[at].chars[len] = '\0';
+  // Add the new row
+  E.rows[i].size = len;
+  E.rows[i].chars = malloc(len + 1);
+  memcpy(E.rows[i].chars, s, len);
+  E.rows[i].chars[len] = '\0';
+
+  E.rows[i].rsize = 0;
+  E.rows[i].render = NULL;
+  editorUpdateRow(&E.rows[i]);
+
   E.numRows++;
 }
 
 void editorOpen(char *filename)
 {
   FILE *fp = fopen(filename, "r");
-  if (!fp)
-    die("fopen");
+  if (!fp) die("fopen");
 
   char *line = NULL;
   size_t lineCap = 0;
@@ -77,10 +116,9 @@ void editorDrawRows(struct abuf *ab)
         abAppend(ab, "~", 1);
       }
     } else {
-      int len = E.row[fileRow].size;
-      if (len > E.screenCols)
-        len = E.screenCols;
-      abAppend(ab, E.row[fileRow].chars, len);
+      int len = E.rows[fileRow].rsize;
+      if (len > E.screenCols) len = E.screenCols;
+      abAppend(ab, E.rows[fileRow].render, len);
     }
 
     // Clear to the right of the cursor
@@ -123,8 +161,7 @@ void editorMoveCursor(char key)
 {
   switch (key) {
     case 'h':
-      if (E.cx != 0)
-        E.cx--;
+      if (E.cx != 0) E.cx--;
       break;
     case 'j':
       if (E.cy < E.editorRows && E.cy < E.numRows - 1) {
@@ -137,8 +174,7 @@ void editorMoveCursor(char key)
       }
       break;
     case 'l':
-      if (E.cx != E.screenCols - 1)
-        E.cx++;
+      if (E.cx != E.screenCols - 1) E.cx++;
       break;
   }
 }
@@ -149,8 +185,7 @@ char editorReadKey()
   int nread;
   char c;
   while ((nread = read(STDIN_FILENO, &c, 1)) != 1) {
-    if (nread == -1 && errno != EAGAIN)
-      die("read");
+    if (nread == -1 && errno != EAGAIN) die("read");
   }
   return c;
 }
@@ -181,7 +216,7 @@ void initEditor()
   E.cy = 0;
   E.rowOff = 0;
   E.numRows = 0;
-  E.row = NULL;
+  E.rows = NULL;
   E.statusMsg = NULL;
 
   if (getWindowSize(&E.screenRows, &E.screenCols) == -1) {

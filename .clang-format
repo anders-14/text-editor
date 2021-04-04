@@ -12,8 +12,8 @@ AlignTrailingComments: true
 SpacesBeforeTrailingComments: 2
 PenaltyReturnTypeOnItsOwnLine: 200
 AllowAllParametersOfDeclarationOnNextLine: false
-AllowShortIfStatementsOnASingleLine: false
-AllowShortLoopsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: true
+AllowShortLoopsOnASingleLine: true
 BinPackParameters: false
 BreakBeforeBinaryOperators: true
 BreakBeforeTernaryOperators: true

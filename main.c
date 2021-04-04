@@ -1,11 +1,11 @@
-#include "main.h"
+#include "common.h"
+#include "editor.h"
 
 int main(int argc, char *argv[])
 {
   enableRawMode();
   initEditor();
-  if (argc >= 2)
-    editorOpen(argv[1]);
+  if (argc >= 2) editorOpen(argv[1]);
 
   while (1) {
     editorRefreshScreen();
