@@ -1,6 +1,7 @@
 #include "editor.h"
 
-void editorAppendRow(char *s, size_t len) {
+void editorAppendRow(char *s, size_t len)
+{
   E.row = realloc(E.row, sizeof(erow) * (E.numRows + 1));
 
   int at = E.numRows;
@@ -12,7 +13,8 @@ void editorAppendRow(char *s, size_t len) {
   E.numRows++;
 }
 
-void editorOpen(char *filename) {
+void editorOpen(char *filename)
+{
   FILE *fp = fopen(filename, "r");
   if (!fp)
     die("fopen");
@@ -22,8 +24,8 @@ void editorOpen(char *filename) {
   ssize_t lineLen;
 
   while ((lineLen = getline(&line, &lineCap, fp)) != -1) {
-    while (lineLen > 0 &&
-           (line[lineLen - 1] == '\n' || line[lineLen - 1] == '\r'))
+    while (lineLen > 0
+           && (line[lineLen - 1] == '\n' || line[lineLen - 1] == '\r'))
       lineLen--;
 
     editorAppendRow(line, lineLen);
@@ -32,7 +34,8 @@ void editorOpen(char *filename) {
   fclose(fp);
 }
 
-void editorScroll() {
+void editorScroll()
+{
   int fileRow = E.cy + E.rowOff;
   if (E.cy == E.editorRows) {
     E.cy--;
@@ -47,22 +50,25 @@ void editorScroll() {
   }
 }
 
-void editorSetStatusMessage(char *msg) {
+void editorSetStatusMessage(char *msg)
+{
   E.statusMsg = msg;
 }
 
-void editorDrawStatusBar(struct abuf *ab) {
+void editorDrawStatusBar(struct abuf *ab)
+{
   char status[120];
-  int statusLen =
-      snprintf(status, sizeof(status),
-               "rowOff: %d | numRows: %d | cx: %d | cy: %d | editorRows: %d | "
-               "screenRows: %d | statusMessage: %s",
-               E.rowOff, E.numRows, E.cx, E.cy, E.editorRows, E.screenRows, E.statusMsg);
+  int statusLen = snprintf(
+      status, sizeof(status),
+      "rowOff: %d | numRows: %d | cx: %d | cy: %d | editorRows: %d | "
+      "screenRows: %d | statusMessage: %s",
+      E.rowOff, E.numRows, E.cx, E.cy, E.editorRows, E.screenRows, E.statusMsg);
   abAppend(ab, status, statusLen);
 }
 
 // Draw what is supposed to be shown on screen atm
-void editorDrawRows(struct abuf *ab) {
+void editorDrawRows(struct abuf *ab)
+{
   int y;
   for (y = 0; y < E.editorRows; y++) {
     int fileRow = y + E.rowOff;
@@ -86,7 +92,8 @@ void editorDrawRows(struct abuf *ab) {
 }
 
 // Clear the screen
-void editorRefreshScreen() {
+void editorRefreshScreen()
+{
   editorScroll();
 
   struct abuf ab = ABUF_INIT;
@@ -112,31 +119,33 @@ void editorRefreshScreen() {
   abFree(&ab);
 }
 
-void editorMoveCursor(char key) {
+void editorMoveCursor(char key)
+{
   switch (key) {
-  case 'h':
-    if (E.cx != 0)
-      E.cx--;
-    break;
-  case 'j':
-    if (E.cy < E.editorRows && E.cy < E.numRows - 1) {
-      E.cy++;
-    }
-    break;
-  case 'k':
-    if (E.cy >= 0) {
-      E.cy--;
-    }
-    break;
-  case 'l':
-    if (E.cx != E.screenCols - 1)
-      E.cx++;
-    break;
+    case 'h':
+      if (E.cx != 0)
+        E.cx--;
+      break;
+    case 'j':
+      if (E.cy < E.editorRows && E.cy < E.numRows - 1) {
+        E.cy++;
+      }
+      break;
+    case 'k':
+      if (E.cy >= 0) {
+        E.cy--;
+      }
+      break;
+    case 'l':
+      if (E.cx != E.screenCols - 1)
+        E.cx++;
+      break;
   }
 }
 
 // Read a key from stdin
-char editorReadKey() {
+char editorReadKey()
+{
   int nread;
   char c;
   while ((nread = read(STDIN_FILENO, &c, 1)) != 1) {
@@ -147,25 +156,27 @@ char editorReadKey() {
 }
 
 // Handle keypresses
-void editorProcessKeypress() {
+void editorProcessKeypress()
+{
   char c = editorReadKey();
 
   switch (c) {
-  case CTRL_KEY('q'):
-    write(STDOUT_FILENO, "\x1b[2J", 4);
-    write(STDOUT_FILENO, "\x1b[H", 3);
-    exit(0);
-    break;
-  case 'h':
-  case 'j':
-  case 'k':
-  case 'l':
-    editorMoveCursor(c);
-    break;
+    case CTRL_KEY('q'):
+      write(STDOUT_FILENO, "\x1b[2J", 4);
+      write(STDOUT_FILENO, "\x1b[H", 3);
+      exit(0);
+      break;
+    case 'h':
+    case 'j':
+    case 'k':
+    case 'l':
+      editorMoveCursor(c);
+      break;
   }
 }
 
-void initEditor() {
+void initEditor()
+{
   E.cx = 0;
   E.cy = 0;
   E.rowOff = 0;

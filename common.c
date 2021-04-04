@@ -3,7 +3,8 @@
 struct termios orig_termios;
 
 // Print error message and exit
-void die(const char *s) {
+void die(const char *s)
+{
   write(STDOUT_FILENO, "\x1b[2J", 4);
   write(STDOUT_FILENO, "\x1b[H", 3);
 
@@ -12,13 +13,15 @@ void die(const char *s) {
 }
 
 // Return the terminal to its original state
-void disableRawMode() {
+void disableRawMode()
+{
   if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios) == -1)
     die("tcsetattr");
 }
 
 // Ready the terminal for text editing
-void enableRawMode() {
+void enableRawMode()
+{
   if (tcgetattr(STDIN_FILENO, &orig_termios) == -1)
     die("tcgetattr");
   atexit(disableRawMode);
@@ -39,7 +42,8 @@ void enableRawMode() {
 
 // Get terminal size through cursor pos at bottom right if
 // getWindowSize fails
-int getCursorPosition(int *rows, int *cols) {
+int getCursorPosition(int *rows, int *cols)
+{
   char buf[32];
   unsigned int i = 0;
 
@@ -65,7 +69,8 @@ int getCursorPosition(int *rows, int *cols) {
 }
 
 // Get terminal size in rows and cols
-int getWindowSize(int *rows, int *cols) {
+int getWindowSize(int *rows, int *cols)
+{
   struct winsize ws;
 
   if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == -1 || ws.ws_col == 0) {
@@ -79,7 +84,8 @@ int getWindowSize(int *rows, int *cols) {
   }
 }
 
-void abAppend(struct abuf *ab, const char *s, int len) {
+void abAppend(struct abuf *ab, const char *s, int len)
+{
   char *new = realloc(ab->b, ab->len + len);
 
   if (new == NULL)
@@ -89,5 +95,7 @@ void abAppend(struct abuf *ab, const char *s, int len) {
   ab->len += len;
 }
 
-void abFree(struct abuf *ab) { free(ab->b); }
-
+void abFree(struct abuf *ab)
+{
+  free(ab->b);
+}

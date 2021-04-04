@@ -1,6 +1,7 @@
 #include "main.h"
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
   enableRawMode();
   initEditor();
   if (argc >= 2)
