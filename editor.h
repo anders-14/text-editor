@@ -19,6 +19,7 @@ typedef struct erow {
 struct editorConfig {
   int cx, cy;
   int rowOff;
+  int editorRows;
   int screenRows;
   int screenCols;
   int numRows;

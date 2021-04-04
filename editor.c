@@ -33,38 +33,28 @@ void editorOpen(char *filename) {
 }
 
 void editorScroll() {
-  if (E.cy >= E.rowOff + E.screenRows) {
-    E.rowOff++;
-  } else if (E.cy == 0 && E.rowOff > 0) {
-    E.rowOff--;
+  int fileRow = E.cy + E.rowOff;
+  if (E.cy == E.editorRows) {
+    E.cy--;
+    if (fileRow < E.numRows) {
+      E.rowOff++;
+    }
+  } else if (E.cy < 0) {
+    E.cy++;
+    if (E.rowOff != 0) {
+      E.rowOff--;
+    }
   }
 }
 
-// Draw tildes down the left hand side, like vim
+// Draw what is supposed to be shown on screen atm
 void editorDrawRows(struct abuf *ab) {
   int y;
-  for (y = 0; y < E.screenRows - 1; y++) {
+  for (y = 0; y < E.editorRows; y++) {
     int fileRow = y + E.rowOff;
-    if (fileRow > E.numRows) {
+    if (fileRow >= E.numRows) {
       if (y >= E.numRows) {
-        if (E.numRows == 0 && y == E.screenRows / 3) {
-          char welcome[80];
-          int welcomeLen = snprintf(welcome, sizeof(welcome),
-                                    "Editor -- version %s", EDITOR_VERSION);
-          if (welcomeLen > E.screenCols)
-            welcomeLen = E.screenCols;
-
-          int padding = (E.screenCols - welcomeLen) / 2;
-          if (padding) {
-            abAppend(ab, "~", 1);
-            padding--;
-          }
-          while (padding--)
-            abAppend(ab, " ", 1);
-          abAppend(ab, welcome, welcomeLen);
-        } else {
-          abAppend(ab, "~", 1);
-        }
+        abAppend(ab, "~", 1);
       }
     } else {
       int len = E.row[fileRow].size;
@@ -75,16 +65,16 @@ void editorDrawRows(struct abuf *ab) {
 
     // Clear to the right of the cursor
     abAppend(ab, "\x1b[K", 3);
-    if (y < E.screenRows - 1)
-      abAppend(ab, "\r\n", 2);
+    abAppend(ab, "\r\n", 2);
   }
 
   // Status line at the bottom to show some info for debug
   char status[80];
   int statusLen =
       snprintf(status, sizeof(status),
-               "rowOff: %d | numRows: %d | cx: %d | cy: %d | screenRows: %d",
-               E.rowOff, E.numRows, E.cx, E.cy, E.screenRows);
+               "rowOff: %d | numRows: %d | cx: %d | cy: %d | editorRows: %d | "
+               "screenRows: %d",
+               E.rowOff, E.numRows, E.cx, E.cy, E.editorRows, E.screenRows);
   abAppend(ab, status, statusLen);
 }
 
@@ -99,8 +89,10 @@ void editorRefreshScreen() {
   // Move cursor to top
   abAppend(&ab, "\x1b[H", 3);
 
+  // Append rows to appendbuffer
   editorDrawRows(&ab);
 
+  // Put the cursor in the correct position
   char buf[32];
   snprintf(buf, sizeof(buf), "\x1b[%d;%dH", E.cy + 1, E.cx + 1);
   abAppend(&ab, buf, strlen(buf));
@@ -108,6 +100,7 @@ void editorRefreshScreen() {
   // Show cursor
   abAppend(&ab, "\x1b[?25h", 6);
 
+  // Write from appendbuffer and free its memory
   write(STDOUT_FILENO, ab.b, ab.len);
   abFree(&ab);
 }
@@ -119,16 +112,12 @@ void editorMoveCursor(char key) {
       E.cx--;
     break;
   case 'j':
-    if (E.cy < E.numRows) {
-      if (E.cy == E.screenRows - 1)
-        E.cy += E.rowOff;
+    if (E.cy < E.editorRows && E.cy < E.numRows - 1) {
       E.cy++;
     }
     break;
   case 'k':
-    if (E.cy > 0) {
-      if (E.cy >= E.screenRows)
-        E.cy -= E.rowOff;
+    if (E.cy >= 0) {
       E.cy--;
     }
     break;
@@ -176,6 +165,10 @@ void initEditor() {
   E.numRows = 0;
   E.row = NULL;
 
-  if (getWindowSize(&E.screenRows, &E.screenCols) == -1)
+  if (getWindowSize(&E.screenRows, &E.screenCols) == -1) {
     die("getWindowSize");
+  }
+
+  // To allow for my status bar at the bottom
+  E.editorRows = E.screenRows - 1;
 }
