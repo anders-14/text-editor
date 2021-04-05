@@ -1,4 +1,5 @@
-#pragma once
+#ifndef COMMON_H
+#define COMMON_H
 
 struct abuf {
   char *b;
@@ -18,3 +19,5 @@ int getWindowSize(int *rows, int *cols);
 void die(const char *s);
 
 void enableRawMode();
+
+#endif
