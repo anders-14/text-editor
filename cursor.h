@@ -3,6 +3,7 @@
 
 #include "editor.h"
 
-int cursorHasValidPositionX(int x, erow *row);
+int cursorHasValidPositionX();
+int cursorHasValidPositionY();
 
 #endif

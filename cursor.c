@@ -1,11 +1,11 @@
 #include "cursor.h"
 
-#include <stdio.h>
-
-int cursorHasValidPositionX(int x, erow *row)
+int cursorHasValidPositionX()
 {
-  printf("%s\n", row->chars);
-  return x;
+	return E.cx;
 }
 
-
+int cursorHasVaildPositionY()
+{
+	return E.cy;
+}
