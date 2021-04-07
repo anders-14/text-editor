@@ -101,9 +101,9 @@ void editorDrawStatusBar(struct abuf *ab)
   int statusLen = snprintf(
       status, sizeof(status),
       "rowOff: %d | numRows: %d | cx: %d | cy: %d | editorRows: %d | "
-      "screenRows: %d | statusMessage: %s",
-      E.rowOff, E.numRows, E.cx, E.cy, E.editorRows, E.screenRows, E.statusMsg);
-  abAppend(ab, status, statusLen);
+      "screenRows: %d | rowSize: %d | statusMessage: %s",
+      E.rowOff, E.numRows, E.cx, E.cy, E.editorRows, E.screenRows, E.rows[E.cy].size, E.statusMsg);
+      abAppend(ab, status, statusLen);
 }
 
 // Draw what is supposed to be shown on screen atm
