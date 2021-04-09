@@ -7,6 +7,7 @@
 #include <unistd.h>
 
 #include "common.h"
+#include "cursor.h"
 #include "types.h"
 
 #define TAB_STOP 4
@@ -39,98 +40,74 @@ void editorUpdateRow(erow *row)
   row->rsize = idx;
 }
 
-void editorAppendRow(char *s, size_t len)
+void editorAppendRow(char *line, size_t len)
 {
-  // Increasing the size of the rows array
+  // Increase the size of E.rows to allow for a new row to be added
   E.rows = realloc(E.rows, sizeof(erow) * (E.numRows + 1));
 
-  int i = E.numRows;
+  // Pointer to new row
+  erow *row = &E.rows[E.numRows];
 
   // Add the new row
-  E.rows[i].size = len;
-  E.rows[i].chars = malloc(len + 1);
-  memcpy(E.rows[i].chars, s, len);
-  E.rows[i].chars[len] = '\0';
+  row->size = len;
+  row->chars = malloc(len + 1);
+  memcpy(row->chars, line, len);
+  row->chars[len] = '\0';
 
-  E.rows[i].rsize = 0;
-  E.rows[i].render = NULL;
-  editorUpdateRow(&E.rows[i]);
+  // Rendered row will have different length due to escape chars and more
+  row->rsize = 0;
+  row->render = NULL;
+  editorUpdateRow(row);
 
   E.numRows++;
 }
 
-void editorOpen(char *filename)
+void editorOpenFile(char *filename)
 {
   FILE *fp = fopen(filename, "r");
   if (!fp) die("fopen");
 
   char *line = NULL;
-  size_t lineCap = 0;
+  size_t lineSize = 0;
   ssize_t lineLen;
 
-  while ((lineLen = getline(&line, &lineCap, fp)) != -1) {
+  while ((lineLen = getline(&line, &lineSize, fp)) != -1) {
+    // Remove newline characters
     while (lineLen > 0
-           && (line[lineLen - 1] == '\n' || line[lineLen - 1] == '\r'))
+           && (line[lineLen - 1] == '\n' || line[lineLen - 1] == '\r')) {
       lineLen--;
-
+    }
     editorAppendRow(line, lineLen);
   }
+
   free(line);
   fclose(fp);
-}
-
-void editorScroll()
-{
-  int fileRow = E.cy + E.rowOff;
-  if (E.cy == E.editorRows) {
-    E.cy--;
-    if (fileRow < E.numRows) {
-      E.rowOff++;
-    }
-  } else if (E.cy < 0) {
-    E.cy++;
-    if (E.rowOff != 0) {
-      E.rowOff--;
-    }
-  }
-}
-
-void editorSetStatusMessage(char *msg)
-{
-  E.statusMsg = msg;
 }
 
 void editorDrawStatusBar(abuf *ab)
 {
   char status[E.screenCols];
-  int statusLen = snprintf(
-      status, sizeof(status),
-      "rowOff: %d | numRows: %d | cx: %d | cy: %d | editorRows: %d | "
-      "screenRows: %d | rowSize: %d | statusMessage: %s",
-      E.rowOff, E.numRows, E.cx, E.cy, E.editorRows, E.screenRows,
-      E.rows[E.cy].size, E.statusMsg);
+  int statusLen
+      = snprintf(status, sizeof(status),
+                 "sx: %d | sy: %d | fx: %d | fy: %d | sc: %d | sr: %d | nr: %d | rs: %d",
+                 E.cursor.screenX, E.cursor.screenY, E.cursor.fileX,
+                 E.cursor.fileY, E.screenCols, E.screenRows, E.numRows, E.rows[E.cursor.fileY].rsize);
   abAppend(ab, status, statusLen);
   // Clear to the right of the cursor
   abAppend(ab, "\x1b[K", 3);
 }
 
-// Draw what is supposed to be shown on screen atm
 void editorDrawRows(abuf *ab)
 {
-  int y;
-  for (y = 0; y < E.editorRows; y++) {
-    int fileRow = y + E.rowOff;
-    if (fileRow >= E.numRows) {
-      if (y >= E.numRows) {
-        abAppend(ab, "~", 1);
-      }
+  int i;
+  for (i = 0; i < E.editorRows; i++) {
+    if (i >= E.numRows) {
+      abAppend(ab, "~", 1);
     } else {
-      int len = E.rows[fileRow].rsize;
-      if (len > E.screenCols) len = E.screenCols;
-      abAppend(ab, E.rows[fileRow].render, len);
+      int offset = E.cursor.fileY - E.cursor.screenY;
+      erow *row = &E.rows[offset + i];
+      abAppend(ab, row->render, row->rsize);
     }
-
-    // Clear to the right of the cursor
     abAppend(ab, "\x1b[K", 3);
     abAppend(ab, "\r\n", 2);
   }
@@ -138,15 +115,14 @@ void editorDrawRows(abuf *ab)
   editorDrawStatusBar(ab);
 }
 
-// Clear the screen
 void editorRefreshScreen()
 {
-  editorScroll();
-
+  // Create a new append buffer
   abuf ab = {NULL, 0};
 
-  // Hide cursor
+  // Hide cursor during redraw
   abAppend(&ab, "\x1b[?25l", 6);
+
   // Move cursor to top
   abAppend(&ab, "\x1b[H", 3);
 
@@ -155,7 +131,8 @@ void editorRefreshScreen()
 
   // Put the cursor in the correct position
   char buf[32];
-  snprintf(buf, sizeof(buf), "\x1b[%d;%dH", E.cy + 1, E.cx + 1);
+  snprintf(buf, sizeof(buf), "\x1b[%d;%dH", E.cursor.screenY + 1,
+           E.cursor.screenX + 1);
   abAppend(&ab, buf, strlen(buf));
 
   // Show cursor
@@ -164,28 +141,6 @@ void editorRefreshScreen()
   // Write from appendbuffer and free its memory
   write(STDOUT_FILENO, ab.b, ab.len);
   abFree(&ab);
-}
-
-void editorMoveCursor(char key)
-{
-  switch (key) {
-    case 'h':
-      if (E.cx != 0) E.cx--;
-      break;
-    case 'j':
-      if (E.cy < E.editorRows && E.cy < E.numRows - 1) {
-        E.cy++;
-      }
-      break;
-    case 'k':
-      if (E.cy >= 0) {
-        E.cy--;
-      }
-      break;
-    case 'l':
-      if (E.cx < E.rows[E.cy].rsize - 1) E.cx++;
-      break;
-  }
 }
 
 // Read a key from stdin
@@ -214,15 +169,15 @@ void editorProcessKeypress()
     case 'j':
     case 'k':
     case 'l':
-      editorMoveCursor(c);
+      cursorMove(c, &E);
       break;
   }
 }
 
 void initEditor()
 {
-  E.cx = 0;
-  E.cy = 0;
+  cursor c = {0};
+  E.cursor = c;
   E.rowOff = 0;
   E.numRows = 0;
   E.rows = NULL;

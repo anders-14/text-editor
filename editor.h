@@ -2,7 +2,7 @@
 #define EDITOR_H
 
 void initEditor();
-void editorOpen(char *filename);
+void editorOpenFile(char *filename);
 void editorRefreshScreen();
 void editorProcessKeypress();
 

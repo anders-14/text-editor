@@ -9,16 +9,6 @@
 
 struct termios orig_termios;
 
-// Print error message and exit
-void die(const char *s)
-{
-  write(STDOUT_FILENO, "\x1b[2J", 4);
-  write(STDOUT_FILENO, "\x1b[H", 3);
-
-  perror(s);
-  exit(1);
-}
-
 // Return the terminal to its original state
 void disableRawMode()
 {
@@ -42,6 +32,17 @@ void enableRawMode()
   raw.c_cc[VTIME] = 1;
 
   if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw) == -1) die("tcsetattr");
+}
+
+// Print error message and exit
+void die(const char *s)
+{
+  write(STDOUT_FILENO, "\x1b[2J", 4);
+  write(STDOUT_FILENO, "\x1b[H", 3);
+  disableRawMode();
+
+  perror(s);
+  exit(1);
 }
 
 // Get terminal size through cursor pos at bottom right if

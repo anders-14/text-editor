@@ -3,7 +3,6 @@
 
 #include "types.h"
 
-int cursorHasValidPositionX(editorConfig *E);
-int cursorHasValidPositionY(editorConfig *E);
+void cursorMove(char key, editorConfig *E);
 
 #endif

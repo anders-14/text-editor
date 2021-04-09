@@ -16,15 +16,12 @@ typedef struct {
 } cursor;
 
 typedef struct {
-  int cx, cy;
-  int rowOff;
-  int colOff;
   int editorRows;
   int screenRows;
   int screenCols;
   int numRows;
   erow *rows;
-  cursor *cursor;
+  cursor cursor;
   char *statusMsg;
 } editorConfig;
 
