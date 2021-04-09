@@ -22,6 +22,7 @@ typedef struct {
 struct editorConfig {
   int cx, cy;
   int rowOff;
+  int colOff;
   int editorRows;
   int screenRows;
   int screenCols;
@@ -195,7 +196,7 @@ void editorMoveCursor(char key)
       }
       break;
     case 'l':
-      if (E.cx != E.screenCols - 1) E.cx++;
+      if (E.cx < E.rows[E.cy].rsize - 1) E.cx++;
       break;
   }
 }
