@@ -10,6 +10,26 @@
 
 #define TAB_STOP 4
 
+#define CTRL_KEY(k) ((k)&0x1f)
+
+typedef struct {
+  int size;
+  int rsize;
+  char *chars;
+  char *render;
+} erow;
+
+struct editorConfig {
+  int cx, cy;
+  int rowOff;
+  int editorRows;
+  int screenRows;
+  int screenCols;
+  int numRows;
+  erow *rows;
+  char *statusMsg;
+} E;
+
 void editorUpdateRow(erow *row)
 {
   int tabs = 0;
