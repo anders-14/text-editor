@@ -24,6 +24,7 @@ typedef struct {
   int screenCols;
   int numRows;
   erow *rows;
+  cursor *cursor;
   char *statusMsg;
 } editorConfig;
 
