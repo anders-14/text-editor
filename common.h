@@ -1,18 +1,10 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-struct abuf {
-  char *b;
-  int len;
-};
+#include "types.h"
 
-#define ABUF_INIT                                                              \
-  {                                                                            \
-    NULL, 0                                                                    \
-  }
-
-void abAppend(struct abuf *ab, const char *s, int len);
-void abFree(struct abuf *ab);
+void abAppend(abuf *ab, const char *s, int len);
+void abFree(abuf *ab);
 
 int getWindowSize(int *rows, int *cols);
 

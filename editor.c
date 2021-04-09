@@ -7,29 +7,13 @@
 #include <unistd.h>
 
 #include "common.h"
+#include "types.h"
 
 #define TAB_STOP 4
 
 #define CTRL_KEY(k) ((k)&0x1f)
 
-typedef struct {
-  int size;
-  int rsize;
-  char *chars;
-  char *render;
-} erow;
-
-struct editorConfig {
-  int cx, cy;
-  int rowOff;
-  int colOff;
-  int editorRows;
-  int screenRows;
-  int screenCols;
-  int numRows;
-  erow *rows;
-  char *statusMsg;
-} E;
+editorConfig E;
 
 void editorUpdateRow(erow *row)
 {
@@ -116,7 +100,7 @@ void editorSetStatusMessage(char *msg)
   E.statusMsg = msg;
 }
 
-void editorDrawStatusBar(struct abuf *ab)
+void editorDrawStatusBar(abuf *ab)
 {
   char status[E.screenCols];
   int statusLen = snprintf(
@@ -128,7 +112,7 @@ void editorDrawStatusBar(struct abuf *ab)
 }
 
 // Draw what is supposed to be shown on screen atm
-void editorDrawRows(struct abuf *ab)
+void editorDrawRows(abuf *ab)
 {
   int y;
   for (y = 0; y < E.editorRows; y++) {
@@ -156,7 +140,7 @@ void editorRefreshScreen()
 {
   editorScroll();
 
-  struct abuf ab = ABUF_INIT;
+  abuf ab = {NULL, 0};
 
   // Hide cursor
   abAppend(&ab, "\x1b[?25l", 6);
