@@ -107,8 +107,9 @@ void editorDrawStatusBar(abuf *ab)
       status, sizeof(status),
       "rowOff: %d | numRows: %d | cx: %d | cy: %d | editorRows: %d | "
       "screenRows: %d | rowSize: %d | statusMessage: %s",
-      E.rowOff, E.numRows, E.cx, E.cy, E.editorRows, E.screenRows, E.rows[E.cy].size, E.statusMsg);
-      abAppend(ab, status, statusLen);
+      E.rowOff, E.numRows, E.cx, E.cy, E.editorRows, E.screenRows,
+      E.rows[E.cy].size, E.statusMsg);
+  abAppend(ab, status, statusLen);
 }
 
 // Draw what is supposed to be shown on screen atm
