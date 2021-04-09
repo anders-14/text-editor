@@ -2,10 +2,10 @@
 #define TYPES_H
 
 typedef struct {
-  int size;
-  int rsize;
   char *chars;
+  int size;
   char *render;
+  int rsize;
 } erow;
 
 typedef struct {
