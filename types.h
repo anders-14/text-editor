@@ -9,6 +9,13 @@ typedef struct {
 } erow;
 
 typedef struct {
+  int screenX;
+  int screenY;
+  int fileX;
+  int fileY;
+} cursor;
+
+typedef struct {
   int cx, cy;
   int rowOff;
   int colOff;
@@ -17,6 +24,7 @@ typedef struct {
   int screenCols;
   int numRows;
   erow *rows;
+  cursor *cursor;
   char *statusMsg;
 } editorConfig;
 
