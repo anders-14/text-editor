@@ -97,7 +97,7 @@ void cursorMove(char key, editorConfig *E)
     case 'k':
       if (cursorCanMoveUp(E)) {
         if (!cursorAtScreenTop(E)) {
-          c->screenY--; 
+          c->screenY--;
         }
         c->fileY--;
         cursorSetValidX(E);

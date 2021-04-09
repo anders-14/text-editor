@@ -87,11 +87,11 @@ void editorOpenFile(char *filename)
 void editorDrawStatusBar(abuf *ab)
 {
   char status[E.screenCols];
-  int statusLen
-      = snprintf(status, sizeof(status),
-                 "sx: %d | sy: %d | fx: %d | fy: %d | sc: %d | sr: %d | nr: %d | rs: %d",
-                 E.cursor.screenX, E.cursor.screenY, E.cursor.fileX,
-                 E.cursor.fileY, E.screenCols, E.screenRows, E.numRows, E.rows[E.cursor.fileY].rsize);
+  int statusLen = snprintf(
+      status, sizeof(status),
+      "sx: %d | sy: %d | fx: %d | fy: %d | sc: %d | sr: %d | nr: %d | rs: %d",
+      E.cursor.screenX, E.cursor.screenY, E.cursor.fileX, E.cursor.fileY,
+      E.screenCols, E.screenRows, E.numRows, E.rows[E.cursor.fileY].rsize);
   abAppend(ab, status, statusLen);
   // Clear to the right of the cursor
   abAppend(ab, "\x1b[K", 3);
