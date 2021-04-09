@@ -110,6 +110,8 @@ void editorDrawStatusBar(abuf *ab)
       E.rowOff, E.numRows, E.cx, E.cy, E.editorRows, E.screenRows,
       E.rows[E.cy].size, E.statusMsg);
   abAppend(ab, status, statusLen);
+  // Clear to the right of the cursor
+  abAppend(ab, "\x1b[K", 3);
 }
 
 // Draw what is supposed to be shown on screen atm
