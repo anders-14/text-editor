@@ -1,7 +1,5 @@
 #include "cursor.h"
 
-#include <stdio.h>
-
 int cursorCanMoveUp(editorConfig *E)
 {
   cursor *c = &E->cursor;
