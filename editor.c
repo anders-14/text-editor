@@ -178,7 +178,6 @@ void initEditor()
 {
   cursor c = {0};
   E.cursor = c;
-  E.rowOff = 0;
   E.numRows = 0;
   E.rows = NULL;
   E.statusMsg = NULL;
