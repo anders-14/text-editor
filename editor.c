@@ -190,6 +190,11 @@ void editorProcessKeypress()
       case 'i':
         E.insertMode = 1;
         break;
+      case 'a':
+        E.insertMode = 1;
+        E.cursor.screenX++;
+        E.cursor.fileX++;
+        break;
       case 'h':
       case 'j':
       case 'k':
