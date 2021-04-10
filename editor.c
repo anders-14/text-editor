@@ -171,23 +171,34 @@ void editorProcessKeypress()
 {
   char c = editorReadKey();
 
-  switch (c) {
-    case CTRL_KEY('q'):
-      write(STDOUT_FILENO, "\x1b[2J", 4);
-      write(STDOUT_FILENO, "\x1b[H", 3);
-      exit(0);
-      break;
-    case 'h':
-    case 'j':
-    case 'k':
-    case 'l':
-    case 'g':
-    case 'G':
-      cursorMove(c, &E);
-      break;
-    default:
-      editorInsertChar(c);
-      break;
+  if (E.insertMode) {
+    switch (c) {
+      case CTRL_KEY('c'):
+        E.insertMode = 0;
+        break;
+      default:
+        editorInsertChar(c);
+        break;
+    }
+  } else {
+    switch (c) {
+      case CTRL_KEY('q'):
+        write(STDOUT_FILENO, "\x1b[2J", 4);
+        write(STDOUT_FILENO, "\x1b[H", 3);
+        exit(0);
+        break;
+      case 'i':
+        E.insertMode = 1;
+        break;
+      case 'h':
+      case 'j':
+      case 'k':
+      case 'l':
+      case 'g':
+      case 'G':
+        cursorMove(c, &E);
+        break;
+    }
   }
 }
 
@@ -195,6 +206,7 @@ void initEditor()
 {
   cursor c = {0};
   E.cursor = c;
+  E.insertMode = 0;
   E.numRows = 0;
   E.rows = NULL;
   E.statusMsg = NULL;

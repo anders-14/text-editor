@@ -16,6 +16,7 @@ typedef struct {
 } cursor;
 
 typedef struct {
+  int insertMode;
   int editorRows;
   int screenRows;
   int screenCols;
