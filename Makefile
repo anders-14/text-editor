@@ -3,7 +3,8 @@
 		main.c \
 		common.c \
 		cursor.c \
-		editor.c
+		editor.c \
+		insert.c
 
 fmt:
 	clang-format -i *.c *.h

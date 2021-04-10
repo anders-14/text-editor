@@ -8,6 +8,7 @@
 
 #include "common.h"
 #include "cursor.h"
+#include "insert.h"
 #include "types.h"
 
 #define TAB_STOP 4
@@ -60,6 +61,17 @@ void editorAppendRow(char *line, size_t len)
   editorUpdateRow(row);
 
   E.numRows++;
+}
+
+void editorInsertChar(int c)
+{
+  if (E.cursor.fileY == E.numRows) {
+    editorAppendRow("", 0);
+  }
+  insertCharInRowAtIndex(&E.rows[E.cursor.fileY], E.cursor.fileX, c);
+  editorUpdateRow(&E.rows[E.cursor.fileY]);
+  E.cursor.screenX++;
+  E.cursor.fileX++;
 }
 
 void editorOpenFile(char *filename)
@@ -172,6 +184,9 @@ void editorProcessKeypress()
     case 'g':
     case 'G':
       cursorMove(c, &E);
+      break;
+    default:
+      editorInsertChar(c);
       break;
   }
 }
