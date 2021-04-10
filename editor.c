@@ -169,6 +169,8 @@ void editorProcessKeypress()
     case 'j':
     case 'k':
     case 'l':
+    case 'g':
+    case 'G':
       cursorMove(c, &E);
       break;
   }

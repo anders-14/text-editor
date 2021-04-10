@@ -73,6 +73,25 @@ void cursorSetValidX(editorConfig *E)
   }
 }
 
+void cursorMoveToFileStart(editorConfig *E)
+{
+  cursor *c = &E->cursor;
+  c->screenY = 0;
+  c->fileY = 0;
+  cursorSetValidX(E);
+}
+
+void cursorMoveToFileEnd(editorConfig *E)
+{
+  cursor *c = &E->cursor;
+  if (E->numRows < E->editorRows) {
+    c->screenY = E->numRows - 1;
+  } else {
+    c->screenY = E->editorRows - 1;
+  }
+  c->fileY = E->numRows - 1;
+}
+
 void cursorMove(char key, editorConfig *E)
 {
   cursor *c = &E->cursor;
@@ -110,6 +129,12 @@ void cursorMove(char key, editorConfig *E)
         }
         c->fileX++;
       }
+      break;
+    case 'g':
+      cursorMoveToFileStart(E);
+      break;
+    case 'G':
+      cursorMoveToFileEnd(E);
       break;
   }
 }
