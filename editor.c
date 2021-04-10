@@ -92,6 +92,8 @@ void editorOpenFile(char *filename)
     editorAppendRow(line, lineLen);
   }
 
+  E.filename = filename;
+
   free(line);
   fclose(fp);
 }
