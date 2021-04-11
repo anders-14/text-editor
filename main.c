@@ -1,19 +1,44 @@
+#include <stdlib.h>
+
 #include "common.h"
-#include "editor.h"
+#include "keys.h"
+#include "draw.h"
+#include "file.h"
+
+void initEditor(editorConfig *E, cursor *c)
+{
+  E->cursor = c;
+  E->insertMode = 0;
+  E->numRows = 0;
+  E->rows = NULL;
+  E->statusMsg = NULL;
+  E->filename = NULL;
+
+  if (getWindowSize(&E->screenRows, &E->screenCols) == -1) {
+    die("getWindowSize");
+  }
+
+  E->editorRows = E->screenRows - 1;
+}
 
 int main(int argc, char *argv[])
 {
   enableRawMode();
-  initEditor();
+
+  editorConfig E;
+  cursor c = {0};
+  initEditor(&E, &c);
+
+
   if (argc >= 2) {
-    editorOpenFile(argv[1]);
+    openFile(&E, argv[1]);
   } else {
-    editorOpenEmptyBuffer();
+    openEmptyFile(&E);
   }
 
   while (1) {
-    editorRefreshScreen();
-    editorProcessKeypress();
+    drawScreen(&E);
+    processKeyboardInput(&E);
   }
 
   return 0;

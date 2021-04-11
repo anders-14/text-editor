@@ -23,7 +23,7 @@ typedef struct {
   int screenCols;
   int numRows;
   erow *rows;
-  cursor cursor;
+  cursor *cursor;
   char *statusMsg;
 } editorConfig;
 

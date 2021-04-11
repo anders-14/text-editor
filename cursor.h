@@ -3,6 +3,6 @@
 
 #include "types.h"
 
-void cursorMove(char key, editorConfig *E);
+void cursorMove(editorConfig *E, char key);
 
 #endif
