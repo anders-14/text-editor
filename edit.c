@@ -12,7 +12,6 @@
 
 #define TAB_STOP 4
 
-
 void insertCharInRowAtIndex(erow *row, int idx, int c)
 {
   if (idx < 0 || idx > row->size) return;
@@ -31,7 +30,7 @@ void deleteCharInRowAtIndex(erow *row, int idx)
   row->size--;
 }
 
-void editorUpdateRow(erow *row)
+void updateRow(erow *row)
 {
   int tabs = 0;
   int j;
@@ -72,7 +71,7 @@ void appendRow(editorConfig *E, char *line, size_t len)
   // Rendered row will have different length due to escape chars and more
   row->rsize = 0;
   row->render = NULL;
-  editorUpdateRow(row);
+  updateRow(row);
 
   E->numRows++;
 }
@@ -83,7 +82,7 @@ void insertChar(editorConfig *E, int c)
     appendRow(E, "", 0);
   }
   insertCharInRowAtIndex(&E->rows[E->cursor->fileY], E->cursor->fileX, c);
-  editorUpdateRow(&E->rows[E->cursor->fileY]);
+  updateRow(&E->rows[E->cursor->fileY]);
   E->cursor->screenX++;
   E->cursor->fileX++;
 }
@@ -94,7 +93,7 @@ void deleteCharBeforeCursor(editorConfig *E)
 
   erow *row = &E->rows[E->cursor->fileY];
   deleteCharInRowAtIndex(row, E->cursor->fileX - 1);
-  editorUpdateRow(row);
+  updateRow(row);
   E->cursor->screenX--;
   E->cursor->fileX--;
 }
