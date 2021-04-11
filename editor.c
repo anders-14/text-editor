@@ -108,9 +108,9 @@ void editorDrawStatusBar(abuf *ab)
   char status[E.screenCols];
   int statusLen = snprintf(
       status, sizeof(status),
-      "sx: %d | sy: %d | fx: %d | fy: %d | sc: %d | sr: %d | nr: %d | rs: %d",
+      "sx: %d | sy: %d | fx: %d | fy: %d | sc: %d | sr: %d | nr: %d | rs: %d | %s",
       E.cursor.screenX, E.cursor.screenY, E.cursor.fileX, E.cursor.fileY,
-      E.screenCols, E.screenRows, E.numRows, E.rows[E.cursor.fileY].rsize);
+      E.screenCols, E.screenRows, E.numRows, E.rows[E.cursor.fileY].rsize, E.statusMsg);
   abAppend(ab, status, statusLen);
   // Clear to the right of the cursor
   abAppend(ab, "\x1b[K", 3);
@@ -176,6 +176,11 @@ char editorReadKey()
 void editorProcessKeypress()
 {
   char c = editorReadKey();
+
+  // DEBUG print char code
+  char smsg[32];
+  snprintf(smsg, sizeof(smsg), "%d", c);
+  E.statusMsg = smsg;
 
   if (E.insertMode) {
     switch (c) {
