@@ -15,6 +15,10 @@
 
 #define CTRL_KEY(k) ((k)&0x1f)
 
+enum keys {
+  BACKSPACE = 127,
+};
+
 editorConfig E;
 
 void editorUpdateRow(erow *row)
@@ -72,6 +76,17 @@ void editorInsertChar(int c)
   editorUpdateRow(&E.rows[E.cursor.fileY]);
   E.cursor.screenX++;
   E.cursor.fileX++;
+}
+
+void editorBackspace()
+{
+  if (E.cursor.fileX == 0) return;
+
+  erow *row = &E.rows[E.cursor.fileY];
+  deleteCharInRowAtIndex(row, E.cursor.fileX - 1);
+  editorUpdateRow(row);
+  E.cursor.screenX--;
+  E.cursor.fileX--;
 }
 
 void editorOpenEmptyBuffer()
@@ -186,6 +201,9 @@ void editorProcessKeypress()
     switch (c) {
       case CTRL_KEY('c'):
         E.insertMode = 0;
+        break;
+      case BACKSPACE:
+        editorBackspace();
         break;
       default:
         editorInsertChar(c);

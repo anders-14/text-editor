@@ -13,3 +13,11 @@ void insertCharInRowAtIndex(erow *row, int idx, int c)
   row->size++;
   row->chars[idx] = c;
 }
+
+void deleteCharInRowAtIndex(erow *row, int idx)
+{
+  if (idx < 0 || idx > row->size) return;
+
+  memmove(&row->chars[idx], &row->chars[idx + 1], row->size - idx);
+  row->size--;
+}
