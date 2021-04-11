@@ -3,6 +3,7 @@
 
 void initEditor();
 void editorOpenFile(char *filename);
+void editorOpenEmptyBuffer();
 void editorRefreshScreen();
 void editorProcessKeypress();
 

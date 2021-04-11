@@ -74,6 +74,11 @@ void editorInsertChar(int c)
   E.cursor.fileX++;
 }
 
+void editorOpenEmptyBuffer()
+{
+  editorAppendRow("", 0);
+}
+
 void editorOpenFile(char *filename)
 {
   FILE *fp = fopen(filename, "r");
@@ -125,7 +130,6 @@ void editorDrawRows(abuf *ab)
     abAppend(ab, "\x1b[K", 3);
     abAppend(ab, "\r\n", 2);
   }
-
   editorDrawStatusBar(ab);
 }
 
