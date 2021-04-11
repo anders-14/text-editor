@@ -2,10 +2,10 @@
 
 #include <stdio.h>
 
-#include "edit.h"
 #include "common.h"
+#include "edit.h"
 
-void openFile(editorConfig * E, char *filename)
+void openFile(editorConfig *E, char *filename)
 {
   FILE *fp = fopen(filename, "r");
   if (!fp) die("fopen");
@@ -29,7 +29,7 @@ void openFile(editorConfig * E, char *filename)
   fclose(fp);
 }
 
-void openEmptyFile(editorConfig * E)
+void openEmptyFile(editorConfig *E)
 {
   appendRow(E, "", 0);
 }

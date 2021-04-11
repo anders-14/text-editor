@@ -1,9 +1,9 @@
 #include <stdlib.h>
 
 #include "common.h"
-#include "keys.h"
 #include "draw.h"
 #include "file.h"
+#include "keys.h"
 
 void initEditor(editorConfig *E, cursor *c)
 {
@@ -28,7 +28,6 @@ int main(int argc, char *argv[])
   editorConfig E;
   cursor c = {0};
   initEditor(&E, &c);
-
 
   if (argc >= 2) {
     openFile(&E, argv[1]);

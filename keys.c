@@ -68,4 +68,3 @@ void processKeyboardInput(editorConfig *E)
     }
   }
 }
-

@@ -97,4 +97,3 @@ void deleteCharBeforeCursor(editorConfig *E)
   E->cursor->screenX--;
   E->cursor->fileX--;
 }
-
