@@ -5,7 +5,11 @@ int main(int argc, char *argv[])
 {
   enableRawMode();
   initEditor();
-  if (argc >= 2) editorOpenFile(argv[1]);
+  if (argc >= 2) {
+    editorOpenFile(argv[1]);
+  } else {
+    editorOpenEmptyBuffer();
+  }
 
   while (1) {
     editorRefreshScreen();
