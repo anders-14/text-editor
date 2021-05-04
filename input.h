@@ -1,5 +1,5 @@
-#ifndef KEYS_H
-#define KEYS_H
+#ifndef INPUT_H
+#define INPUT_H
 
 #include "types.h"
 

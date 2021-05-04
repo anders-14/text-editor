@@ -3,7 +3,7 @@
 #include "common.h"
 #include "draw.h"
 #include "file.h"
-#include "keys.h"
+#include "input.h"
 
 void initEditor(editorConfig *E, cursor *c)
 {

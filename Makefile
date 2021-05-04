@@ -6,7 +6,7 @@
 		draw.c \
 		edit.c \
 		file.c \
-		keys.c \
+		input.c \
 		main.c
 
 fmt:
