@@ -7,6 +7,7 @@
 #include "common.h"
 #include "cursor.h"
 #include "edit.h"
+#include "file.h"
 
 #define CTRL_KEY(k) ((k)&0x1f)
 
@@ -48,6 +49,9 @@ void processKeyboardInput(editorConfig *E)
         write(STDOUT_FILENO, "\x1b[2J", 4);
         write(STDOUT_FILENO, "\x1b[H", 3);
         exit(0);
+        break;
+      case CTRL_KEY('s'):
+        saveFile(E);
         break;
       case 'i':
         E->insertMode = 1;
