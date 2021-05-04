@@ -12,6 +12,7 @@
 #define CTRL_KEY(k) ((k)&0x1f)
 
 enum keys {
+  ENTER = 13,
   BACKSPACE = 127,
 };
 
@@ -35,6 +36,10 @@ void processKeyboardInput(editorConfig *E)
     switch (c) {
       case CTRL_KEY('c'):
         E->insertMode = 0;
+        break;
+      case ENTER:
+        insertRowAtIndex(E, E->cursor->fileY, "", 0);
+        cursorMove(E, 'j');
         break;
       case BACKSPACE:
         deleteCharBeforeCursor(E);

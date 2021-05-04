@@ -12,6 +12,26 @@
 
 #define TAB_STOP 4
 
+void insertRowAtIndex(editorConfig *E, int idx, char *s, size_t len)
+{
+  if (idx < 0 || idx > E->numRows) return;
+
+  E->rows = realloc(E->rows, sizeof(erow) * (E->numRows + 1));
+  memmove(&E->rows[idx + 1], &E->rows[idx], sizeof(erow) * E->numRows - idx);
+
+  erow *row = &E->rows[idx];
+
+  row->size = len;
+  row->chars = malloc(len + 1);
+  memcpy(row->chars, s, len);
+  row->chars[len] = '\0';
+
+  row->rsize = 0;
+  row->render = NULL;
+
+  E->numRows++;
+}
+
 void insertCharInRowAtIndex(erow *row, int idx, int c)
 {
   if (idx < 0 || idx > row->size) return;
