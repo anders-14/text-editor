@@ -36,6 +36,7 @@ void processKeyboardInput(editorConfig *E)
     switch (c) {
       case CTRL_KEY('c'):
         E->insertMode = 0;
+        cursorMove(E, 'h');
         break;
       case ENTER:
         insertRowAtIndex(E, E->cursor->fileY, "", 0);
