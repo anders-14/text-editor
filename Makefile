@@ -4,4 +4,4 @@ main: $(SRC)
 	gcc -o $@ -Wall -Wextra -pedantic $^
 
 fmt:
-	clang-format -i *.c *.h
+	clang-format -i src/*.c src/*.h
