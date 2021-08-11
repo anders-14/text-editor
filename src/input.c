@@ -39,7 +39,7 @@ void processKeyboardInput(editorConfig *E)
         cursorMove(E, 'h');
         break;
       case ENTER:
-        insertRowAtIndex(E, E->cursor->fileY, "", 0);
+        insertRowAtIndex(E, E->cursor->fileY + 1, "", 0);
         cursorMove(E, 'j');
         break;
       case BACKSPACE:

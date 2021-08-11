@@ -17,7 +17,7 @@ void insertRowAtIndex(editorConfig *E, int idx, char *s, size_t len)
   if (idx < 0 || idx > E->numRows) return;
 
   E->rows = realloc(E->rows, sizeof(erow) * (E->numRows + 1));
-  memmove(&E->rows[idx + 1], &E->rows[idx], sizeof(erow) * E->numRows - idx);
+  memmove(&E->rows[idx + 1], &E->rows[idx], sizeof(erow) * (E->numRows - idx));
 
   erow *row = &E->rows[idx];
 
