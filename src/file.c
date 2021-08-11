@@ -43,9 +43,17 @@ void openEmptyFile(editorConfig *E)
 
 void saveFile(editorConfig *E)
 {
+  if (!E->filename) {
+    // TODO: prompt for a filename
+    return;
+  }
+
   FILE *fp = fopen(E->filename, "w");
+  if (!fp) die("fopen");
+
   for (int i = 0; i < E->numRows; i++) {
     fprintf(fp, "%s\n", E->rows[i].chars);
   }
+
   fclose(fp);
 }
