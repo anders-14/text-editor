@@ -1,12 +1,19 @@
 #include "file.h"
 
 #include <stdio.h>
+#include <unistd.h>
 
 #include "common.h"
 #include "edit.h"
 
 void openFile(editorConfig *E, char *filename)
 {
+  if (access(filename, F_OK) == -1) {
+    openEmptyFile(E);
+    E->filename = filename;
+    return;
+  }
+
   FILE *fp = fopen(filename, "r");
   if (!fp) die("fopen");
 
