@@ -25,6 +25,8 @@ typedef struct {
   erow *rows;
   cursor *cursor;
   char *statusMsg;
+  int promptActive;
+  char *promptValue;
 } editorConfig;
 
 typedef struct {

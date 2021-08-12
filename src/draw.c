@@ -22,6 +22,13 @@ void drawStatusBar(editorConfig *E, abuf *ab)
   abAppend(ab, "\x1b[K", 3);
 }
 
+void drawPrompt(editorConfig *E, abuf *ab)
+{
+  abAppend(ab, ":", 1);
+  abAppend(ab, E->promptValue, strlen(E->promptValue));
+  abAppend(ab, "\x1b[K", 3);
+}
+
 void drawRows(editorConfig *E, abuf *ab)
 {
   int i;
@@ -36,7 +43,6 @@ void drawRows(editorConfig *E, abuf *ab)
     abAppend(ab, "\x1b[K", 3);
     abAppend(ab, "\r\n", 2);
   }
-  drawStatusBar(E, ab);
 }
 
 void drawScreen(editorConfig *E)
@@ -52,6 +58,12 @@ void drawScreen(editorConfig *E)
 
   // Append rows to appendbuffer
   drawRows(E, &ab);
+
+  if (E->promptActive == 1) {
+    drawPrompt(E, &ab);
+  } else {
+    drawStatusBar(E, &ab);
+  }
 
   // Put the cursor in the correct position
   char buf[32];

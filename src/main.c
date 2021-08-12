@@ -13,6 +13,8 @@ void initEditor(editorConfig *E, cursor *c)
   E->rows = NULL;
   E->statusMsg = NULL;
   E->filename = NULL;
+  E->promptValue = NULL;
+  E->promptActive = 0;
 
   if (getWindowSize(&E->screenRows, &E->screenCols) == -1) {
     die("getWindowSize");
