@@ -51,6 +51,9 @@ void processKeyboardInput(editorConfig *E)
     }
   } else {
     switch (c) {
+      case ':':
+        E->promptMode = 1;
+        break;
       case CTRL_KEY('q'):
         write(STDOUT_FILENO, "\x1b[2J", 4);
         write(STDOUT_FILENO, "\x1b[H", 3);

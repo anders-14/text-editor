@@ -68,7 +68,7 @@ void drawScreen(editorConfig *E)
   // Append rows to appendbuffer
   drawRows(E, &ab);
 
-  if (E->promptActive == 1) {
+  if (E->promptMode == 1) {
     drawPrompt(E, &ab);
     drawCursor(&ab, (E->promptValue ? strlen(E->promptValue) : 0) + 2, E->screenRows);
   } else {
