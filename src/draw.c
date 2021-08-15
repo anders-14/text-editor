@@ -25,7 +25,9 @@ void drawStatusBar(editorConfig *E, abuf *ab)
 void drawPrompt(editorConfig *E, abuf *ab)
 {
   abAppend(ab, ":", 1);
-  abAppend(ab, E->promptValue, strlen(E->promptValue));
+  if (E->promptValue) {
+    abAppend(ab, E->promptValue, strlen(E->promptValue));
+  }
   abAppend(ab, "\x1b[K", 3);
 }
 
@@ -45,6 +47,13 @@ void drawRows(editorConfig *E, abuf *ab)
   }
 }
 
+void drawCursor(abuf *ab, int x, int y)
+{
+  char buf[32];
+  sprintf(buf, "\x1b[%d;%dH", y, x);
+  abAppend(ab, buf, strlen(buf));
+}
+
 void drawScreen(editorConfig *E)
 {
   // Create a new append buffer
@@ -61,15 +70,12 @@ void drawScreen(editorConfig *E)
 
   if (E->promptActive == 1) {
     drawPrompt(E, &ab);
+    drawCursor(&ab, (E->promptValue ? strlen(E->promptValue) : 0) + 2, E->screenRows);
   } else {
     drawStatusBar(E, &ab);
+    drawCursor(&ab, E->cursor->screenX + 1, E->cursor->screenY + 1);
   }
 
-  // Put the cursor in the correct position
-  char buf[32];
-  snprintf(buf, sizeof(buf), "\x1b[%d;%dH", E->cursor->screenY + 1,
-           E->cursor->screenX + 1);
-  abAppend(&ab, buf, strlen(buf));
 
   // Show cursor
   abAppend(&ab, "\x1b[?25h", 6);
