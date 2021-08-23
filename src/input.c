@@ -1,3 +1,5 @@
+#include "input.h"
+
 #include <errno.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -6,7 +8,6 @@
 #include "cursor.h"
 #include "edit.h"
 #include "file.h"
-#include "input.h"
 
 #define CTRL_KEY(k) ((k)&0x1f)
 
@@ -19,7 +20,7 @@ void keypressNormalMode(editorConfig *E, char c)
 {
   switch (c) {
     case ':':
-      E->promptMode = 1;
+      E->mode = PROMPT;
       break;
     case CTRL_KEY('q'):
       write(STDOUT_FILENO, "\x1b[2J", 4);
@@ -30,10 +31,10 @@ void keypressNormalMode(editorConfig *E, char c)
       saveFile(E);
       break;
     case 'i':
-      E->insertMode = 1;
+      E->mode = INSERT;
       break;
     case 'a':
-      E->insertMode = 1;
+      E->mode = INSERT;
       E->cursor->screenX++;
       E->cursor->fileX++;
       break;
@@ -48,11 +49,11 @@ void keypressNormalMode(editorConfig *E, char c)
   }
 }
 
-void keypressInputMode(editorConfig *E, char c)
+void keypressInsertMode(editorConfig *E, char c)
 {
   switch (c) {
     case CTRL_KEY('c'):
-      E->insertMode = 0;
+      E->mode = NORMAL;
       cursorMove(E, 'h');
       break;
     case ENTER:
@@ -92,13 +93,11 @@ void processKeyboardInput(editorConfig *E)
 {
   char c = readKey();
 
-  if (E->insertMode == 1) {
-    keypressInputMode(E, c);
-  }
-  else if (E->promptMode == 1) {
-    keypressPromptMode(E, c);
-  }
-  else {
+  if (E->mode == NORMAL) {
     keypressNormalMode(E, c);
+  } else if (E->mode == INSERT) {
+    keypressInsertMode(E, c);
+  } else if (E->mode == PROMPT) {
+    keypressPromptMode(E, c);
   }
 }

@@ -68,14 +68,14 @@ void drawScreen(editorConfig *E)
   // Append rows to appendbuffer
   drawRows(E, &ab);
 
-  if (E->promptMode == 1) {
+  if (E->mode == PROMPT) {
     drawPrompt(E, &ab);
-    drawCursor(&ab, (E->promptValue ? strlen(E->promptValue) : 0) + 2, E->screenRows);
+    drawCursor(&ab, (E->promptValue ? strlen(E->promptValue) : 0) + 2,
+               E->screenRows);
   } else {
     drawStatusBar(E, &ab);
     drawCursor(&ab, E->cursor->screenX + 1, E->cursor->screenY + 1);
   }
-
 
   // Show cursor
   abAppend(&ab, "\x1b[?25h", 6);

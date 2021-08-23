@@ -1,6 +1,12 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+enum modes {
+  NORMAL,
+  INSERT,
+  PROMPT,
+};
+
 typedef struct {
   char *chars;
   int size;
@@ -17,7 +23,6 @@ typedef struct {
 
 typedef struct {
   char *filename;
-  int insertMode;
   int editorRows;
   int screenRows;
   int screenCols;
@@ -25,8 +30,8 @@ typedef struct {
   erow *rows;
   cursor *cursor;
   char *statusMsg;
-  int promptMode;
   char *promptValue;
+  enum modes mode;
 } editorConfig;
 
 typedef struct {
