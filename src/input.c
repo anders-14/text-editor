@@ -72,6 +72,9 @@ void keypressInsertMode(editorConfig *E, char c)
 void keypressPromptMode(editorConfig *E, char c)
 {
   switch (c) {
+    case CTRL_KEY('c'):
+      E->mode = NORMAL;
+      break;
     default:
       break;
   }
