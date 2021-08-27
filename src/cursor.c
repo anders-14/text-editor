@@ -134,5 +134,9 @@ void cursorMove(editorConfig *E, const char key)
     case 'G':
       cursorMoveToFileEnd(E);
       break;
+    case '0':
+      c->screenX = 0;
+      c->fileX = 0;
+      break;
   }
 }

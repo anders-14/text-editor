@@ -38,6 +38,16 @@ void keypressNormalMode(editorConfig *E, char c)
       E->cursor->screenX++;
       E->cursor->fileX++;
       break;
+    case 'o':
+      insertRowAtIndex(E, E->cursor->fileY + 1, "", 0);
+      cursorMove(E, 'j');
+      E->mode = INSERT;
+      break;
+    case 'O':
+      cursorMove(E, '0');
+      insertRowAtIndex(E, E->cursor->fileY, "", 0);
+      E->mode = INSERT;
+      break;
     case 'h':
     case 'j':
     case 'k':
