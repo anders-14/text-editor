@@ -33,8 +33,7 @@ void drawPrompt(editorConfig *E, abuf *ab)
 
 void drawRows(editorConfig *E, abuf *ab)
 {
-  int i;
-  for (i = 0; i < E->editorRows; i++) {
+  for (int i = 0; i < E->editorRows; i++) {
     if (i >= E->numRows) {
       abAppend(ab, "~", 1);
     } else {
