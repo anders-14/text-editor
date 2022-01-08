@@ -103,8 +103,13 @@ void insertChar(editorConfig *E, int c)
   }
   insertCharInRowAtIndex(&E->rows[E->cursor->fileY], E->cursor->fileX, c);
   updateRow(&E->rows[E->cursor->fileY]);
-  E->cursor->screenX++;
-  E->cursor->fileX++;
+  if (c == '\t') {
+    E->cursor->screenX += TAB_STOP - (E->cursor->screenX % TAB_STOP);
+    E->cursor->fileX += TAB_STOP - (E->cursor->fileX % TAB_STOP);
+  } else {
+    E->cursor->screenX++;
+    E->cursor->fileX++;
+  }
 }
 
 void deleteCharBeforeCursor(editorConfig *E)
